@@ -10,3 +10,7 @@ cache = Redis(
     password=get_env.REDIS_PASSWORD
 )
 
+celecry_excutor = Celery(
+    broker=get_env.RABBITMQ_LINK,
+    backend=get_env.REDIS_LINK
+)

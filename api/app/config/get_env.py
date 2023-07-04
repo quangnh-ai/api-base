@@ -1,7 +1,5 @@
 import os
 
-
-
 #=========================================================================
 #                          API INFORMATION 
 #=========================================================================
@@ -24,16 +22,21 @@ REDIS_LINK = "redis://:{password}@{hostname}:{port}/{db}".format(
     db=str(REDIS_DB)
 )
 
-# #=========================================================================
-# #                          BROKER INFORMATION 
-# #=========================================================================
-# RABBITMQ_LINK = "amqp://{user}:{password}@{hostname}:{port}/{vhost}".format(
-#     user=os.environ['RABBITMQ_USER'],
-#     password = os.environ['RABBITMQ_PASSWORD'],
-#     hostname=os.environ['RABBITMQ_HOST'],
-#     port=os.environ['RABBITMQ_PORT'],
-#     vhost=os.environ['RABBITMQ_VHOST']
-# )
+#=========================================================================
+#                          BROKER INFORMATION 
+#=========================================================================
+RABBITMQ_HOST = os.environ['RABBIMQ_HOST']
+RABBITMQ_PORT = int(os.environ['RABBITMQ_PORT'])
+RABBITMQ_USER = os.environ['RABBITMQ_USER']
+RABBITMQ_PASSWORD = os.environ['RABBITMQ_PASSWORD']
+RABBITMQ_VHOST = os.environ['RABBITMQ_VHOST']
+RABBITMQ_LINK = "amqp://{user}:{password}@{hostname}:{port}/{vhost}".format(
+    user=RABBITMQ_USER,
+    password = RABBITMQ_PASSWORD,
+    hostname=RABBITMQ_HOST,
+    port=str(RABBITMQ_PORT),
+    vhost=RABBITMQ_VHOST
+)
 
 #=========================================================================
 #                          TEST TASK INFORMATION 

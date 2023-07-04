@@ -13,7 +13,7 @@ from routers.test_router.entities import (
     TestPostResponse,
     TestResult
 )
-from utils.mq_and_cache import cache
+from utils import mq_and_cache
 from config.get_env import (
     TEST_TASK_TYPE,
     TEST_TASK_NAME
@@ -38,12 +38,11 @@ async def post_test(request: TestPostRequest) -> TestPostResponse:
             start_time=post_time
         )
         data_result = json.dumps(data_result.__dict__)
-        cache.set(
+        mq_and_cache.cache.set(
             request_id,
             json.dumps(data_result)
         )
-        
-        
+
         return TestPostResponse(
             id=request_id, 
             time=post_time,
@@ -59,7 +58,7 @@ async def post_test(request: TestPostRequest) -> TestPostResponse:
 @router.get("/get/{request_id}")
 async def get_result(*, request_id: str):
     try:
-        data = cache.get(request_id)
+        data = mq_and_cache.cache.get(request_id)
         if data == None:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
