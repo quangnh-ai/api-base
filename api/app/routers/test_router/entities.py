@@ -6,8 +6,8 @@ class TestPostRequest(BaseModel):
     test_str: str
 
 class TestPostResponse(BaseModel):
-    id: str = None
-    time: str = None
+    request_id: str = None
+    post_time: str = None
     status_code: int
     message: str
 

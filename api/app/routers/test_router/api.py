@@ -15,7 +15,7 @@ from routers.test_router.entities import (
 )
 from utils import mq_and_cache
 from config.get_env import (
-    TEST_TASK_TYPE,
+    TEST_APP_NAME,
     TEST_TASK_NAME
 )
 
@@ -23,15 +23,14 @@ router = APIRouter()
 
 @router.post("/post")
 async def post_test(request: TestPostRequest) -> TestPostResponse:
-    try:
-        post_time = str(datetime.datetime.utcnow())
-        request_id = str(
-            uuid.uuid5(
-                uuid.NAMESPACE_OID,
-                TEST_TASK_TYPE + TEST_TASK_NAME + post_time
-            )
+    post_time = str(datetime.datetime.utcnow())
+    request_id = str(
+        uuid.uuid5(
+            uuid.NAMESPACE_OID,
+            TEST_APP_NAME + TEST_TASK_NAME + post_time
         )
-
+    )
+    try:
         data_result = TestResult(
             status_code=status.HTTP_200_OK,
             status="PROCESSING",
@@ -40,21 +39,46 @@ async def post_test(request: TestPostRequest) -> TestPostResponse:
         data_result = json.dumps(data_result.__dict__)
         mq_and_cache.cache.set(
             request_id,
-            json.dumps(data_result)
+            data_result
+        )
+
+        mq_and_cache.celecry_excutor.send_task(
+            name="{app_name}.{task_name}".format(
+                app_name=TEST_APP_NAME,
+                task_name=TEST_TASK_NAME
+            ),
+            kwargs={
+                'request_id': request_id,
+                'data': data_result
+            },
+            queue=TEST_APP_NAME
         )
 
         return TestPostResponse(
-            id=request_id, 
-            time=post_time,
+            request_id=request_id, 
+            post_time=post_time,
             status_code=status.HTTP_200_OK,
             message='response has been send succesfully'
         )
+    
     except Exception as e:
-        return TestPostResponse(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            message=e
+        mq_and_cache.cache.set(
+            request_id,
+            json.dumps(
+                TestResult(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    status="FAILED",
+                    message="Failed when posting request: " + str(e)
+                ).__dict__
+            )
         )
-
+        return TestPostResponse(
+            request_id=request_id,
+            post_time=post_time,
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            message=str(e)
+        )
+    
 @router.get("/get/{request_id}")
 async def get_result(*, request_id: str):
     try:

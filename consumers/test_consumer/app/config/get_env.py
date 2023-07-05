@@ -1,14 +1,6 @@
 import os
 
 #=========================================================================
-#                          API INFORMATION 
-#=========================================================================
-API_TITLE = os.environ['API_TITLE']
-API_OPENAPI_URL = os.environ['API_OPENAPI_URL']
-API_DOCS_URL = os.environ['API_DOCS_URL']
-API_REDOC_URL = os.environ['API_REDOC_URL']
-
-#=========================================================================
 #                          REDIS INFORMATION 
 #=========================================================================
 REDIS_HOST = os.environ['REDIS_HOST']
