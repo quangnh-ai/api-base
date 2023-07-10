@@ -7,6 +7,7 @@ from fastapi import (
 import uuid
 import datetime
 import json
+import pytz
 
 from routers.test_router.entities import (
     TestPostRequest, 
@@ -23,7 +24,11 @@ router = APIRouter()
 
 @router.post("/post")
 async def post_test(request: TestPostRequest) -> TestPostResponse:
-    post_time = str(datetime.datetime.utcnow())
+    post_time = str(
+        datetime.datetime.now(
+            pytz.timezone('Asia/Ho_Chi_Minh')
+        )
+    )
     request_id = str(
         uuid.uuid5(
             uuid.NAMESPACE_OID,
@@ -42,18 +47,21 @@ async def post_test(request: TestPostRequest) -> TestPostResponse:
             data_result
         )
 
-        mq_and_cache.celecry_excutor.send_task(
-            name="{app_name}.{task_name}".format(
+        print('---------------------------------')
+        print("{app_name}.{task_name}".format(
                 app_name=TEST_APP_NAME,
                 task_name=TEST_TASK_NAME
-            ),
+            ))
+        print('---------------------------------')
+
+        mq_and_cache.celecry_excutor.send_task(
+            name="test.test_task",
             kwargs={
                 'request_id': request_id,
                 'data': data_result
-            },
-            queue=TEST_APP_NAME
+            }
         )
-
+        
         return TestPostResponse(
             request_id=request_id, 
             post_time=post_time,

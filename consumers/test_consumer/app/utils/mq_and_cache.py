@@ -8,3 +8,8 @@ cache = Redis(
     db=get_env.REDIS_DB
 )
 
+def is_cache_running():
+    return True
+
+def is_broker_running():
+    return True
