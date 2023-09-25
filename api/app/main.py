@@ -1,7 +1,7 @@
 from redis import Redis
 from fastapi import FastAPI
 
-from routers import api_routers
+from api import router_v1
 from config import get_env
 
 
@@ -13,5 +13,6 @@ app = FastAPI(
 )
 
 app.include_router(
-    api_routers.routers
+    router_v1.router,
+    prefix="/v1",
 )
