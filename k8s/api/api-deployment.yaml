@@ -14,6 +14,7 @@ spec:
       containers:
       - name: api
         image: api:latest
+        imagePullPolicy: "IfNotPresent"
         resources:
           limits:
             memory: "128Mi"
