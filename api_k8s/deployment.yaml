@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-base
+spec:
+  selector:
+    matchLabels:
+      app: api-base
+  template:
+    metadata:
+      labels:
+        app: api-base
+    spec:
+      containers:
+      - name: api-base
+        image: quang009182/api-base:latest
+        imagePullPolicy: "IfNotPresent"
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 8081
